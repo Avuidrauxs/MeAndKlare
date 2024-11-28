@@ -1,9 +1,12 @@
 import express from 'express';
 import pinoHttp from 'pino-http';
+import dotenv from 'dotenv';
 import textGeneratorRoutes from './text-generator/routes';
 import userRoutes from './user/routes';
 import errorHandler from './middleware/errorHandler';
 import logger from './lib/logger';
+
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,9 +14,7 @@ const port = process.env.PORT || 3000;
 // Apply Pino HTTP middleware for logging requests
 app.use(pinoHttp({ logger }));
 
-app.use(express.json(
-  { limit: '10mb', type: 'application/json' }
-));
+app.use(express.json({ limit: '10mb', type: 'application/json' }));
 
 // Entry endpoint that says "Hello World"
 app.get('/', (req, res) => {

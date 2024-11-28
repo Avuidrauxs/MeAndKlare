@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { Request, Response } from 'express';
 import TextGeneratorService from './service';
 

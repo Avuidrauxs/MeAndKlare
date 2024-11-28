@@ -21,6 +21,16 @@
         "prettier"
       ],
       "rules": {
-        "prettier/prettier": "error"
+        "prettier/prettier": "error",
+        "import/extensions": "off",
+        "import/prefer-default-export": "off",
+        "no-useless-constructor": "off",
+        "no-empty-function": "off",
+        "node/no-unsupported-features/es-syntax": "off",
+        "node/no-missing-import": "warn",
+        "consistent-return": "warn",
+        "no-console": "warn",
+        "@typescript-eslint/no-unused-vars": "warn",
+        "import/no-unresolved": "warn"
       }
     }

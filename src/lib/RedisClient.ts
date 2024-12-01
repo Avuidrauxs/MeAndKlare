@@ -1,17 +1,22 @@
-import { createClient, RedisClientType } from 'redis';
+import { Redis } from 'ioredis';
+import dotenv from 'dotenv';
+import logger from './logger';
+
+dotenv.config();
 
 class RedisClient {
-  private static instance: RedisClientType;
+  private static instance: Redis;
 
-  static getInstance(): RedisClientType {
+  static getInstance(): Redis {
     if (!RedisClient.instance) {
-      RedisClient.instance = createClient({
-        url: 'redis://redis:6379',
+      RedisClient.instance = new Redis({
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
       });
+
       RedisClient.instance.on('error', (err) =>
-        console.error('Redis Client Error', err),
+        logger.error('Redis Client Error', err),
       );
-      RedisClient.instance.connect();
     }
     return RedisClient.instance;
   }

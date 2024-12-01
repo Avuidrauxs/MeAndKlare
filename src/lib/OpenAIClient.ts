@@ -1,16 +1,17 @@
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
+import logger from './logger';
 
 class OpenAIClient {
-  private static instance: OpenAIApi;
+  private static instance: OpenAI;
 
   private constructor() {}
 
-  static getInstance(): OpenAIApi {
+  static getInstance(): OpenAI {
     if (!OpenAIClient.instance) {
-      const configuration = new Configuration({
+      const configuration = {
         apiKey: process.env.OPENAI_API_KEY,
-      });
-      OpenAIClient.instance = new OpenAIApi(configuration);
+      };
+      OpenAIClient.instance = new OpenAI(configuration);
     }
     return OpenAIClient.instance;
   }

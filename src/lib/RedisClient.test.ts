@@ -1,26 +1,39 @@
-import { createClient } from 'redis';
+import { Redis } from 'ioredis';
 import RedisClient from './RedisClient';
 
-jest.mock('redis', () => {
-  const mClient = {
-    connect: jest.fn(),
-    on: jest.fn(),
-  };
-  return {
-    createClient: jest.fn(() => mClient),
-  };
-});
+jest.mock('ioredis');
+jest.mock('dotenv', () => ({
+  config: jest.fn(),
+}));
+jest.mock('./logger', () => ({
+  error: jest.fn(),
+}));
 
 describe('RedisClient', () => {
-  it('should create a new Redis client instance', () => {
-    const client = RedisClient.getInstance();
-    expect(createClient).toHaveBeenCalledTimes(1);
-    expect(client.connect).toHaveBeenCalled();
+  let redisInstanceMock: jest.Mocked<Redis>;
+
+  beforeEach(() => {
+    redisInstanceMock = new Redis() as jest.Mocked<Redis>;
+    (Redis as unknown as jest.Mock).mockReturnValue(redisInstanceMock);
   });
 
-  it('should return the same instance on subsequent calls', () => {
-    const client1 = RedisClient.getInstance();
-    const client2 = RedisClient.getInstance();
-    expect(client1).toBe(client2);
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should create a new Redis instance if not already created', () => {
+    const instance = RedisClient.getInstance();
+    expect(instance).toBe(redisInstanceMock);
+    expect(Redis).toHaveBeenCalledWith({
+      host: process.env.REDIS_HOST,
+      port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    });
+  });
+
+  it('should return the existing Redis instance if already created', () => {
+    const firstInstance = RedisClient.getInstance();
+    const secondInstance = RedisClient.getInstance();
+    expect(firstInstance).toBe(secondInstance);
+    expect(Redis).toHaveBeenCalledTimes(1);
   });
 });

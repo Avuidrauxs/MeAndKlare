@@ -1,5 +1,8 @@
+/* eslint-disable node/no-unsupported-features/node-builtins */
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { BaseMessage } from '@langchain/core/messages';
+import { RedisByteStore } from '@langchain/community/storage/ioredis';
 import RedisClient from '../lib/RedisClient';
 
 class UserService {
@@ -9,15 +12,16 @@ class UserService {
 
   static async registerUser(username: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    await this.redisClient.hSet(`user:${username}`, 'password', hashedPassword);
+    await this.redisClient.mset(`user:${username}`, 'password', hashedPassword);
   }
 
   static async loginUser(username: string, password: string): Promise<string> {
-    const storedPassword = await this.redisClient.hGet(
+    const storedPasswordArray = await this.redisClient.mget(
       `user:${username}`,
       'password',
     );
-    if (!storedPassword || !(await bcrypt.compare(password, storedPassword))) {
+    const storedPassword = storedPasswordArray[0];
+    if (!storedPassword || !bcrypt.compare(password, storedPassword)) {
       throw new Error('Invalid credentials');
     }
 
@@ -26,7 +30,7 @@ class UserService {
   }
 
   static async storeUserTextGeneration(username: string, text: string) {
-    await this.redisClient.hSet(`user:${username}`, 'recentText', text);
+    await this.redisClient.mset(`user:${username}`, 'recentText', text);
   }
 }
 

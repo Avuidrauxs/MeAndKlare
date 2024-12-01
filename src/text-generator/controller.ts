@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import { Request, Response } from 'express';
 import TextGeneratorService from './service';
+import logger from '../lib/logger';
 
 class TextGeneratorController {
   static async generateText(req: Request, res: Response) {
@@ -13,6 +14,7 @@ class TextGeneratorController {
       const text = await TextGeneratorService.generateText(prompt);
       res.send(text);
     } catch (error) {
+      console.log(error, 'fsdfsdfsdfas');
       res.status(500).send('Error generating text');
     }
   }

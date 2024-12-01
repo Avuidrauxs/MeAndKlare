@@ -144,7 +144,7 @@ async function FAGRagChainWithChatHistory() {
     combineDocsChain: faqChain,
   });
 
-  // USe redis to statefully mamanger chat history
+  // Use redis to statefully manage chat history
   const client = RedisClient.getInstance();
 
   // Statefully manage chat history

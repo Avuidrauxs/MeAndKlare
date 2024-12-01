@@ -5,8 +5,15 @@ services:
         build: .
         ports:
           - "${PORT}:${PORT}"
-        depends_on:
-          - redis
+        environment:
+          - NODE_ENV=development
+          - REDIS_URL=redis://redis:6379
+          - JWT_SECRET=your-secret-key-change-in-production
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+      - /app/node_modules
     redis:
         image: "redis:alpine"
         container_name: redis

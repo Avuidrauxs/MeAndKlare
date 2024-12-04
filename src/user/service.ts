@@ -6,7 +6,7 @@ import RedisClient from '../lib/RedisClient';
 class UserService {
   private static redisClient = RedisClient.getInstance();
 
-  private static SECRET_KEY = 'your_secret_key';
+  private static SECRET_KEY = process.env.JWT_SECRET ?? 'your_secret_key';
 
   static async registerUser(username: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,8 +27,8 @@ class UserService {
     return token;
   }
 
-  static async storeUserTextGeneration(username: string, text: string) {
-    await this.redisClient.mset(`user:${username}`, 'recentText', text);
+  static async getUser(userId: string) {
+    await this.redisClient.get(`user:${userId}`);
   }
 }
 

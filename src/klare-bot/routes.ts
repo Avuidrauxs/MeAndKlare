@@ -1,11 +1,20 @@
 import { Router } from 'express';
 import KlareBotController from './controller';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.post('/sendMessage', KlareBotController.sendMessage);
-router.post('/initiateCheckIn', KlareBotController.sendMessage);
-router.get('/retrieveContext', KlareBotController.sendMessage);
-router.put('/updateContext', KlareBotController.sendMessage);
+router.post('/sendMessage', authMiddleware, KlareBotController.sendMessage);
+router.post(
+  '/initiateCheckIn',
+  authMiddleware,
+  KlareBotController.initiateCheckIn,
+);
+router.get(
+  '/retrieveContext',
+  authMiddleware,
+  KlareBotController.retrieveContext,
+);
+router.put('/updateContext', authMiddleware, KlareBotController.updateContext);
 
 export default router;

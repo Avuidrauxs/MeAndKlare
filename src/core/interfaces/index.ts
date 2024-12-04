@@ -17,10 +17,9 @@ export interface IMessageService {
 }
 
 export interface IContextService {
-  getContext(userId: string): Promise<Context>;
+  getContext(userId: string): Promise<Context | null>;
   updateContext(userId: string, context: Context): Promise<void>;
-  addMessageToHistory(userId: string, message: Message): Promise<void>;
-  getMessageHistory(userId: string): Promise<Message[]>;
+  saveContext(userId: string, context: Context): Promise<void>;
   clearContext(userId: string): Promise<void>;
 }
 

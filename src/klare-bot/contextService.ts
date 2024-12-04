@@ -4,35 +4,54 @@ import { Context, FlowType, Message } from '../core/types';
 import logger from '../lib/logger';
 import { IContextService } from '../core/interfaces';
 
-export class ContextService {
+export class ContextService implements IContextService {
   private readonly CONTEXT_EXPIRY = 60 * 60 * 24; // 24 hours
-
-  private readonly HISTORY_LIMIT = 10;
 
   private readonly KEY_PREFIX = 'msg:';
 
   private redisClient = RedisClient.getInstance();
 
-  async getContext(userId: string): Promise<Context> {
+  async getContext(userId: string): Promise<Context | null> {
     try {
       const key = this.getContextKey(userId);
-      const context = await this.redisClient.get(key);
-      return context ? JSON.parse(context) : this.getDefaultContext();
+      const value = await this.redisClient.get(key);
+      if (value) {
+        return JSON.parse(value) as Context;
+      }
+      return this.getDefaultContext();
     } catch (error) {
       logger.error({ message: 'Error getting context:', error });
-      return this.getDefaultContext();
+      return null;
     }
   }
 
-  async updateContext(userId: string, context: Context): Promise<void> {
+  async saveContext(userId: string, context: Context): Promise<void> {
     try {
       const key = this.getContextKey(userId);
-      const sanitizedContext = this.sanitizeContext(context);
-      await this.redisClient.setex(
-        key,
-        this.CONTEXT_EXPIRY,
-        JSON.stringify(sanitizedContext),
-      );
+      const value = JSON.stringify(context);
+      await this.redisClient.set(key, value);
+    } catch (error) {
+      logger.error({ message: 'Error saving context:', error });
+      throw new Error('Failed to save context');
+    }
+  }
+
+  async updateContext(
+    userId: string,
+    updates: Partial<Context>,
+  ): Promise<void> {
+    try {
+      const context = await this.getContext(userId);
+      if (context) {
+        const updatedContext = {
+          ...context,
+          ...updates,
+          lastUpdated: new Date(),
+        };
+        await this.saveContext(userId, updatedContext);
+      } else {
+        throw new Error('Context not found');
+      }
     } catch (error) {
       logger.error({ message: 'Error updating context:', error });
       throw new Error('Failed to update context');
@@ -85,27 +104,6 @@ export class ContextService {
     return {
       flow: FlowType.NORMAL,
       lastUpdated: new Date(),
-    };
-  }
-
-  private sanitizeContext(context: Context): Context {
-    return {
-      ...context,
-      lastUpdated: new Date(),
-      // Remove any undefined or null values
-      // eslint-disable-next-line node/no-unsupported-features/es-builtins
-      ...Object.fromEntries(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Object.entries(context).filter(([_, v]) => v != null),
-      ),
-    };
-  }
-
-  private sanitizeMessage(message: Message): Message {
-    return {
-      ...message,
-      content: message.content.trim(),
-      timestamp: new Date(message.timestamp),
     };
   }
 }

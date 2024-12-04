@@ -24,6 +24,8 @@ export interface Context {
   lastResponse?: string;
   mood?: string;
   lastUpdated: Date;
+  llmContext?: Record<string, unknown>[];
+  chatHistory?: Record<string, unknown>[];
   metadata?: Record<string, unknown>;
 }
 

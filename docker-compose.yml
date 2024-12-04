@@ -7,13 +7,19 @@ services:
           - "${PORT}:${PORT}"
         environment:
           - NODE_ENV=development
-          - REDIS_URL=redis://redis:6379
-          - JWT_SECRET=your-secret-key-change-in-production
-    depends_on:
-      - redis
-    volumes:
-      - .:/app
-      - /app/node_modules
+          - REDIS_URL=redis://${REDIS_HOST}:${REDIS_PORT}
+          - JWT_SECRET=${JWT_SECRET}
+          - OPENAI_API_KEY=${OPENAI_API_KEY}
+          - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+          - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+          - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
+        depends_on:
+          - redis
+        command: npm run dev
     redis:
         image: "redis:alpine"
         container_name: redis
+        volumes:
+          - redis_data:/data
+volumes:
+  redis_data:

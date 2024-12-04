@@ -1,5 +1,8 @@
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatOpenAI } from '@langchain/openai';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const OpenAIModel = new ChatOpenAI({
   model: process.env.OPENAI_MODEL,

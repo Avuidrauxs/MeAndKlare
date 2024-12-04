@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { JWTPayload } from './core/types';
 
 const SECRET_KEY = 'your_secret_key';
 

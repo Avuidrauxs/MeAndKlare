@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+import { v4 as uuidv4 } from 'uuid';
 import RedisClient from '../lib/RedisClient';
 import { Context, FlowType, Message } from '../core/types';
 import logger from '../lib/logger';
@@ -18,7 +19,7 @@ export class ContextService implements IContextService {
       if (value) {
         return JSON.parse(value) as Context;
       }
-      return this.getDefaultContext();
+      return null;
     } catch (error) {
       logger.error({ message: 'Error getting context:', error });
       return null;
@@ -55,6 +56,24 @@ export class ContextService implements IContextService {
     } catch (error) {
       logger.error({ message: 'Error updating context:', error });
       throw new Error('Failed to update context');
+    }
+  }
+
+  async upsertContext(
+    userId: string,
+    updates: Partial<Context>,
+  ): Promise<void> {
+    try {
+      const context = await this.getContext(userId);
+      const updatedContext = {
+        ...context,
+        ...updates,
+        lastUpdated: new Date(),
+      };
+      await this.saveContext(userId, updatedContext as Context);
+    } catch (error) {
+      logger.error({ message: 'Error upserting context:', error });
+      throw new Error('Failed to upsert context');
     }
   }
 
@@ -104,6 +123,7 @@ export class ContextService implements IContextService {
     return {
       flow: FlowType.NORMAL,
       lastUpdated: new Date(),
+      sessionId: uuidv4(),
     };
   }
 }

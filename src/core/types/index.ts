@@ -1,4 +1,6 @@
-export enum MessageType {
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
+
+export enum Intent {
   NORMAL = 'NORMAL',
   FAQ = 'FAQ',
   SUICIDE_RISK = 'SUICIDE_RISK',
@@ -14,42 +16,37 @@ export interface Message {
   userId: string;
   content: string;
   timestamp: Date;
-  type: MessageType;
+  intent: Intent;
 }
+
+export type MessageArray = (HumanMessage | AIMessage)[];
 
 export interface Context {
   userId?: string;
+  sessionId: string;
   flow: FlowType;
+  mood?: string;
   lastMessage?: string;
   lastResponse?: string;
-  mood?: string;
+  intent?: Intent;
   lastUpdated: Date;
-  llmContext?: Record<string, unknown>[];
-  chatHistory?: Record<string, unknown>[];
+  llmContext?: unknown[];
+  chatHistory?: MessageArray;
   metadata?: Record<string, unknown>;
-}
-
-export interface ProcessedMessageResult {
-  response: string;
-  flow: FlowType;
-  messageType: MessageType;
-  aiResponse?: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface FlowResult {
-  response: string;
-  flow: FlowType;
-  action?: string;
 }
 
 export interface User {
   id: string;
+  username: string;
+  password: string;
+  sessionId: string;
   [key: string]: unknown;
 }
 
 export interface JWTPayload {
   userId: string;
+  sessionId: string;
+  username?: string;
   iat?: number;
   exp?: number;
 }

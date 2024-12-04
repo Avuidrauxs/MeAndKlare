@@ -97,17 +97,16 @@ export default class KlareBotController {
   }
 
   static async retrieveContext(req: Request, res: Response): Promise<void> {
-    const { userId } = req.query;
+    const { userId } = req.user as JWTPayload;
 
-    const context = await KlareBotController.contextService.getContext(
-      userId as string,
-    );
+    const context = await KlareBotController.contextService.getContext(userId);
 
     res.status(200).send({ context });
   }
 
   static async updateContext(req: Request, res: Response): Promise<void> {
-    const { userId, updates } = req.body;
+    const { userId } = req.user as JWTPayload;
+    const { updates } = req.body;
 
     await KlareBotController.contextService.updateContext(userId, updates);
 

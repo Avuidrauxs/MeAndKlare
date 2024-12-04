@@ -52,8 +52,6 @@ class UserService {
       throw new Error('Invalid credentials');
     }
 
-    console.log(user, userId, 'sdfdsafsafsd');
-
     const token = jwt.sign(
       {
         userId: user.id,

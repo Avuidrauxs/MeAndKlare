@@ -1,14 +1,14 @@
-/* eslint-disable node/no-unsupported-features/node-builtins */
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import RedisClient from '../lib/RedisClient';
 import { User } from '../core/types';
+import { config } from '../config';
 
 class UserService {
   private static redisClient = RedisClient.getInstance();
 
-  private static SECRET_KEY = process.env.JWT_SECRET ?? 'secret';
+  private static SECRET_KEY = config.auth.jwtSecret;
 
   static async registerUser(username: string, password: string): Promise<void> {
     const id = uuidv4();

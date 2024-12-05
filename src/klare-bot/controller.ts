@@ -110,6 +110,6 @@ export default class KlareBotController {
 
     await KlareBotController.contextService.updateContext(userId, updates);
 
-    res.status(201).send('Context updated');
+    res.status(200).send('Context updated');
   }
 }

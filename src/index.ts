@@ -6,14 +6,18 @@ import dotenv from 'dotenv';
 import klarebotRoutes from './klare-bot/routes';
 import userRoutes from './user/routes';
 import errorHandler from './middleware/errorHandler';
+import { config } from './config';
+import logger from './lib/logger';
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const { port, env } = config.server;
 
 // Apply Pino HTTP middleware for logging requests
-// app.use(pinoHttp({ logger }));
+if (env !== 'test') {
+  app.use(pinoHttp({ logger }));
+}
 
 // Middleware
 app.use(helmet());
@@ -35,6 +39,21 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP' });
+});
+
+// Metrics endpoint
+app.get('/metrics', (req, res) => {
+  const metrics = {
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage(),
+    timestamp: Date.now(),
+  };
+  res.status(200).json(metrics);
+});
+
 app.use('/api', userRoutes);
 app.use('/api', klarebotRoutes);
 
@@ -44,7 +63,7 @@ app.use(errorHandler);
 // Health check
 app.get('/health', (_, res) => res.status(200).json({ status: 'ok' }));
 
-if (process.env.NODE_ENV !== 'test') {
+if (env !== 'test') {
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });

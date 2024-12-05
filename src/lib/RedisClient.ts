@@ -1,17 +1,17 @@
 import { Redis } from 'ioredis';
-import dotenv from 'dotenv';
 import logger from './logger';
-
-dotenv.config();
+import { config } from '../config';
 
 class RedisClient {
   private static instance: Redis;
 
   static getInstance(): Redis {
+    const { host, port } = config.redis;
+
     if (!RedisClient.instance) {
       RedisClient.instance = new Redis({
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        host,
+        port: Number(port),
       });
 
       RedisClient.instance.on('error', (err) =>

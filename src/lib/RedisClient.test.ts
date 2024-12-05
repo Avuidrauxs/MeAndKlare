@@ -1,39 +1,33 @@
 import { Redis } from 'ioredis';
 import RedisClient from './RedisClient';
 
-jest.mock('ioredis');
-jest.mock('dotenv', () => ({
-  config: jest.fn(),
-}));
-jest.mock('./logger', () => ({
-  error: jest.fn(),
-}));
-
 describe('RedisClient', () => {
-  let redisInstanceMock: jest.Mocked<Redis>;
 
-  beforeEach(() => {
-    redisInstanceMock = new Redis() as jest.Mocked<Redis>;
-    (Redis as unknown as jest.Mock).mockReturnValue(redisInstanceMock);
+  let redisClient: Redis;
+
+  beforeAll(() => {
+    redisClient = RedisClient.getInstance();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  afterAll(() => {
+    redisClient.disconnect();
   });
 
-  it('should create a new Redis instance if not already created', () => {
-    const instance = RedisClient.getInstance();
-    expect(instance).toBe(redisInstanceMock);
-    expect(Redis).toHaveBeenCalledWith({
-      host: process.env.REDIS_HOST,
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-    });
-  });
 
   it('should return the existing Redis instance if already created', () => {
     const firstInstance = RedisClient.getInstance();
     const secondInstance = RedisClient.getInstance();
     expect(firstInstance).toBe(secondInstance);
-    expect(Redis).toHaveBeenCalledTimes(1);
   });
+
+  it('should set and get a value from Redis', async () => {
+    const key = 'test-key';
+    const value = 'test-value';
+
+    await redisClient.set(key, value);
+    const result = await redisClient.get(key);
+
+    expect(result).toBe(value);
+  });
+
 });

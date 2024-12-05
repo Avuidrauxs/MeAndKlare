@@ -9,8 +9,6 @@ export class BaseError extends Error {
   }
 }
 
-export class MessageError extends BaseError {}
-export class FlowError extends BaseError {}
-export class AIError extends BaseError {}
-export class CacheError extends BaseError {}
+export class ContextServiceError extends BaseError {}
+export class LlmServiceError extends BaseError {}
 export class ValidationError extends BaseError {}

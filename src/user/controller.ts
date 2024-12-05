@@ -10,7 +10,7 @@ class UserController {
 
     try {
       await UserService.registerUser(username, password);
-      res.status(201).send('User registered successfully');
+      res.status(200).send('User registered successfully');
     } catch (error) {
       res.status(500).send('Error registering user');
     }

@@ -1,17 +1,17 @@
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatOpenAI } from '@langchain/openai';
-import dotenv from 'dotenv';
+import { config } from '../config';
 
-dotenv.config();
+const { openAiModelName, anthropicModelName, temperature } = config.ai
 
 const OpenAIModel = new ChatOpenAI({
-  model: process.env.OPENAI_MODEL,
-  temperature: Number(process.env.LLM_TEMP ?? 0),
+  model: openAiModelName,
+  temperature,
 });
 
 const AnthropicModel = new ChatAnthropic({
-  model: process.env.ANTHROPIC_MODEL,
-  temperature: Number(process.env.LLM_TEMP ?? 0),
+  model: anthropicModelName,
+  temperature,
 });
 
 export { OpenAIModel, AnthropicModel };

@@ -20,6 +20,7 @@ import {
   CONTEXTUALIZE_SYSTEM_PROMPT,
   NORMAL_CONVERSATION_SYSTEM_PROMPT,
 } from '../core/constants';
+import { config } from '../config';
 
 class LLMService {
   private static redisClient = RedisClient.getInstance();
@@ -47,11 +48,11 @@ class LLMService {
   }
 
   private static getLLM() {
-    const { OPENAI_API_KEY, ANTHROPIC_API_KEY } = process.env;
-    if (ANTHROPIC_API_KEY) {
+    const { openAiApiKey, anthropicApiKey } = config.ai;
+    if (anthropicApiKey) {
       return AnthropicModel;
     }
-    if (OPENAI_API_KEY) {
+    if (openAiApiKey) {
       return OpenAIModel;
     }
     throw new Error('No OpenAI or Anthropic API key found');

@@ -1,10 +1,12 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
 import { Redis } from 'ioredis';
-import app from '../index';
-import RedisClient from '../lib/RedisClient';
-import { ContextService } from './contextService';
-import { Context, FlowType } from '../core/types';
+import app from '../../index';
+import RedisClient from '../../lib/RedisClient';
+import { ContextService } from './service';
+import { Context, FlowType } from '../../core/types';
+import { ContextServiceError } from '../../core/errors';
+import KlareChatBotController from '../klare-chat-bot/controller';
 
 describe('Context Routes', () => {
   let redisClient: Redis;
@@ -21,11 +23,11 @@ describe('Context Routes', () => {
     contextService = new ContextService();
 
     await request(app)
-      .post('/api/register')
+      .post('/api/v1/user/register')
       .send({ username, password });
 
     const loginResponse = await request(app)
-      .post('/api/login')
+      .post('/api/v1/user/login')
       .send({ username, password });
 
     token = loginResponse.body.token;
@@ -37,6 +39,10 @@ describe('Context Routes', () => {
     redisClient.quit();
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should retrieve the user context', async () => {
     // Set up initial context in Redis
     const initialContext: Context = {
@@ -46,7 +52,7 @@ describe('Context Routes', () => {
       lastMessage: 'Hello',
       lastResponse: 'Hi',
       mood: 'happy',
-      lastUpdated: new Date(),
+      lastUpdated: new Date().toISOString(),
       llmContext: [],
       chatHistory: [],
       metadata: {},
@@ -54,7 +60,7 @@ describe('Context Routes', () => {
     await contextService.saveContext(userId, initialContext);
 
     const response = await request(app)
-      .get('/api/retrieveContext')
+      .get('/api/v1/context/retrieveContext')
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
@@ -68,7 +74,7 @@ describe('Context Routes', () => {
     };
 
     const response = await request(app)
-      .put('/api/updateContext')
+      .put('/api/v1/context/updateContext')
       .set('Authorization', `Bearer ${token}`)
       .send({
         updates: {
@@ -84,5 +90,19 @@ describe('Context Routes', () => {
 
     expect(updatedContext?.lastMessage).toBe(updates.lastMessage);
     expect(updatedContext?.mood).toBe(updates.mood);
+  });
+
+  it('should handle errors correctly', async () => {
+    // Simulate an error in the ContextService method
+    jest.spyOn(KlareChatBotController.contextService, 'getContext').mockImplementationOnce(() => {
+      throw new ContextServiceError('Test error');
+    });
+
+    const response = await request(app)
+      .get('/api/v1/context/retrieveContext')
+      .set('Authorization', `Bearer ${token}`);
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('message', 'Internal Server Error');
   });
 });

@@ -5,6 +5,7 @@ export const SUICIDE_RISK_KEYWORDS: string[] = [
   'want to die',
   'no reason to live',
   'better off dead',
+  'hurt myself',
 ];
 
 export const FAQ_RESPONSES: Record<string, string> = {
@@ -17,6 +18,23 @@ export const FAQ_RESPONSES: Record<string, string> = {
     'Yes, all therapy sessions are completely confidential within legal limits.',
 };
 
+export const NORMAL_RESPONSES: Record<string, string> = {
+  'i’m feeling anxious today':
+    "I'm sorry to hear that. Can you tell me more about it?",
+  "i've been stressed at work.":
+    'Stress can be tough. Have you tried any relaxation techniques?',
+};
+
+export const CHECK_IN_RESPONSES: Record<string, string> = {
+  'good.': 'Great! Anything specific that made today good?',
+  'just a good day at work': "Awesome! If you need anything, I'm here.",
+  'bad.': "I'm sorry to hear that. What's been going on?",
+  "i'm feeling overwhelmed":
+    'That sounds tough. Would you like some tips or to talk more about it?',
+};
+
+export const CHECK_IN_INITIATION_TEXT: string = 'Hi! How are you doing today?';
+
 export const SUICIDE_RISK_RESPONSE: string = `
   I'm really sorry you're feeling this way. 
   Please talk to a mental health professional or contact a crisis hotline right away. Your safety is very important.
@@ -28,7 +46,7 @@ export const CLASSIFY_SYSTEM_PROMPT = `
   Use the following pieces of retrieved context to answer 
   the question. If you detect it's not a FAQ, handle it accordingly. Use three sentences maximum and keep the 
   answer concise.
-  Classify the prompt into one of these categories: NORMAL, FAQ, SUICIDE_RISK.
+  Classify the prompt into one of these intent: NORMAL, FAQ, SUICIDE_RISK.
   
 
   With the intent added in as a property "intent" and the entire answer output is inisde an object

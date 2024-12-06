@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import RedisClient from '../lib/RedisClient';
-import { User } from '../core/types';
-import { config } from '../config';
+import RedisClient from '../../lib/RedisClient';
+import { User } from '../../core/types';
+import { config } from '../../config';
 
 class UserService {
   private static redisClient = RedisClient.getInstance();

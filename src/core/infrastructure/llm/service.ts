@@ -1,3 +1,7 @@
+/*
+I would prefer performing evaluation tests with LLMs and GPTs
+*/
+/* istanbul ignore file */
 import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
@@ -13,14 +17,18 @@ import { RedisChatMessageHistory } from '@langchain/community/stores/message/ior
 import { RunnableWithMessageHistory } from '@langchain/core/runnables';
 import { BaseChatMessageHistory } from '@langchain/core/chat_history';
 import { VectorStoreRetriever } from '@langchain/core/vectorstores';
-import { AnthropicModel, OpenAIModel } from '../lib/LangChainClient';
-import RedisClient from '../lib/RedisClient';
+import {
+  AnthropicModel,
+  GroqModel,
+  OpenAIModel,
+} from '../../../lib/LangChainClient';
+import RedisClient from '../../../lib/RedisClient';
 import {
   CLASSIFY_SYSTEM_PROMPT,
   CONTEXTUALIZE_SYSTEM_PROMPT,
   NORMAL_CONVERSATION_SYSTEM_PROMPT,
-} from '../core/constants';
-import { config } from '../config';
+} from '../../constants';
+import { config } from '../../../config';
 
 class LLMService {
   private static redisClient = RedisClient.getInstance();
@@ -48,14 +56,17 @@ class LLMService {
   }
 
   private static getLLM() {
-    const { openAiApiKey, anthropicApiKey } = config.ai;
+    const { openAiApiKey, anthropicApiKey, groqApiKey } = config.ai;
     if (anthropicApiKey) {
       return AnthropicModel;
     }
     if (openAiApiKey) {
       return OpenAIModel;
     }
-    throw new Error('No OpenAI or Anthropic API key found');
+    if (groqApiKey) {
+      return GroqModel;
+    }
+    throw new Error('No OpenAI or Anthropic or Groq API key found');
   }
 
   private static generateSystemPrompt(systemPrompt: string) {

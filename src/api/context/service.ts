@@ -1,9 +1,10 @@
 /* eslint-disable class-methods-use-this */
 import { v4 as uuidv4 } from 'uuid';
-import RedisClient from '../lib/RedisClient';
-import { Context, FlowType, Message } from '../core/types';
-import logger from '../lib/logger';
-import { IContextService } from '../core/interfaces';
+import RedisClient from '../../lib/RedisClient';
+import { Context, FlowType, Message } from '../../core/types';
+import logger from '../../lib/logger';
+import { IContextService } from '../../core/interfaces';
+import { ContextServiceError } from '../../core/errors';
 
 export class ContextService implements IContextService {
   private readonly CONTEXT_EXPIRY = 60 * 60 * 24; // 24 hours
@@ -22,7 +23,7 @@ export class ContextService implements IContextService {
       return null;
     } catch (error) {
       logger.error({ message: 'Error getting context:', error });
-      return null;
+      throw new ContextServiceError('Failed to get context', error as Error);
     }
   }
 
@@ -33,7 +34,7 @@ export class ContextService implements IContextService {
       await this.redisClient.set(key, value);
     } catch (error) {
       logger.error({ message: 'Error saving context:', error });
-      throw new Error('Failed to save context');
+      throw new ContextServiceError('Failed to save context', error as Error);
     }
   }
 
@@ -55,7 +56,7 @@ export class ContextService implements IContextService {
       }
     } catch (error) {
       logger.error({ message: 'Error updating context:', error });
-      throw new Error('Failed to update context');
+      throw new ContextServiceError('Failed to update context', error as Error);
     }
   }
 
@@ -73,29 +74,7 @@ export class ContextService implements IContextService {
       await this.saveContext(userId, updatedContext as Context);
     } catch (error) {
       logger.error({ message: 'Error upserting context:', error });
-      throw new Error('Failed to upsert context');
-    }
-  }
-
-  async addMessageToHistory(userId: string, message: string): Promise<void> {
-    try {
-      const key = this.getHistoryKey(userId);
-
-      await this.redisClient.rpush(key, message);
-    } catch (error) {
-      logger.error({ message: 'Error adding message to history:', error });
-      throw new Error('Failed to add message to history');
-    }
-  }
-
-  async getMessageHistory(userId: string) {
-    try {
-      const key = this.getHistoryKey(userId);
-      const history = await this.redisClient.lrange(key, 0, -1);
-      return history.map((entry, idx) => `User: ${entry}`).join('\n');
-    } catch (error) {
-      logger.error({ message: 'Error getting message history:', error });
-      return [];
+      throw new ContextServiceError('Failed to upsert context', error as Error);
     }
   }
 
@@ -107,7 +86,7 @@ export class ContextService implements IContextService {
       ]);
     } catch (error) {
       logger.error({ message: 'Error clearing context:', error });
-      throw new Error('Failed to clear context');
+      throw new ContextServiceError('Failed to clear context', error as Error);
     }
   }
 

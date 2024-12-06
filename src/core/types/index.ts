@@ -1,4 +1,6 @@
-import { AIMessage, HumanMessage } from '@langchain/core/messages';
+import { Document } from '@langchain/core/documents';
+import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
+import { RunnableWithMessageHistory } from '@langchain/core/runnables';
 
 export enum Intent {
   NORMAL = 'NORMAL',
@@ -29,7 +31,7 @@ export interface Context {
   lastMessage?: string;
   lastResponse?: string;
   intent?: Intent;
-  lastUpdated: Date;
+  lastUpdated: Date | string;
   llmContext?: unknown[];
   chatHistory?: MessageArray;
   metadata?: Record<string, unknown>;
@@ -50,3 +52,26 @@ export interface JWTPayload {
   iat?: number;
   exp?: number;
 }
+
+export type LlmChainRunnable = RunnableWithMessageHistory<
+  {
+    input: string;
+    chat_history?: BaseMessage[] | string;
+  } & {
+    [key: string]: unknown;
+  },
+  {
+    context: Document[];
+    answer: string;
+  } & {
+    [key: string]: unknown;
+  }
+>;
+
+export type LlmChainResponse = {
+  context: Document[];
+  answer: string;
+} & {
+  chat_history?: MessageArray;
+  [key: string]: unknown;
+};

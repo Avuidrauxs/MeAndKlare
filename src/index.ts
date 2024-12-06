@@ -1,10 +1,13 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import 'reflect-metadata';
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
 import dotenv from 'dotenv';
-import klarebotRoutes from './klare-bot/routes';
-import userRoutes from './user/routes';
+import klarebotRoutes from './api/klare-chat-bot/routes';
+import userRoutes from './api/user/routes';
+import contextRoutes from './api/context/routes';
 import errorHandler from './middleware/errorHandler';
 import { config } from './config';
 import logger from './lib/logger';
@@ -15,7 +18,7 @@ const app = express();
 const { port, env } = config.server;
 
 // Apply Pino HTTP middleware for logging requests
-if (env !== 'test') {
+if (env === 'production') {
   app.use(pinoHttp({ logger }));
 }
 
@@ -54,8 +57,9 @@ app.get('/metrics', (req, res) => {
   res.status(200).json(metrics);
 });
 
-app.use('/api', userRoutes);
-app.use('/api', klarebotRoutes);
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/message', klarebotRoutes);
+app.use('/api/v1/context', contextRoutes);
 
 // Catch-all error handling middleware
 app.use(errorHandler);

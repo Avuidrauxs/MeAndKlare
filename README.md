@@ -48,6 +48,8 @@ Required environment variables:
 OPENAI_API_KEY= # You can get API key here: https://platform.openai.com/api-keys
 # OR
 ANTHROPIC_API_KEY= # You can get API key here: https://console.anthropic.com/
+# OR
+GROQ_API_KEY= # You can get API Key here: https://console.groq.com/keys
 REDIS_HOST=redis
 REDIS_PORT=6379
 PORT=3000
@@ -58,6 +60,7 @@ OPENAI_MODEL="gpt-4o-mini"
 ANTHROPIC_MODEL=claude-3-5-sonnet-20240620
 LLM_TEMP= 0
 JWT_SECRET=secret
+MAX_TOKENS=2000
 ```
 
 4. **Start Redis** (if not using Docker)
@@ -216,35 +219,6 @@ Authorization: Bearer <token>
 }
 ```
 
-## 📁 Project Structure
-
-```
-src/
-├── api/
-│   ├── controllers/
-│   ├── middleware/
-│   └── routes/
-├── core/
-│   ├── interfaces/
-│   ├── types/
-│   └── errors/
-├── infrastructure/
-│   ├── cache/
-│   │   └── redis/
-│   └── ai/
-│       └── openai/
-├── services/
-│   ├── messageService.ts
-│   └── flowService.ts
-├── utils/
-│   ├── validators.ts
-│   └── retry.ts
-└── tests/
-    ├── services/
-    ├── infrastructure/
-    └── setup.ts
-```
-
 ## 🔧 Configuration
 
 ### TypeScript Configuration
@@ -302,6 +276,8 @@ GET /metrics
 - JWT authentication
 - Rate limiting
 - Helmet security headers
+- Sanitizing Input
+- Check if Inputs exceed max tokens
 - Error handling
 
 

@@ -8,7 +8,6 @@ const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('We are here 4');
   logger.error(err.stack);
   if (err instanceof ValidationError || err instanceof ContextServiceError) {
     return res.status(400).json({ message: err.message });

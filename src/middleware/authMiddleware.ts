@@ -1,8 +1,19 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../auth';
+import { JWTPayload } from '../core/types';
+
+declare global {
+  namespace Express {
+    // eslint-disable-next-line no-shadow
+    interface Request {
+      user?: JWTPayload;
+    }
+  }
+}
 
 export const authMiddleware = (
-  req: Request & { user?: any },
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -18,6 +29,6 @@ export const authMiddleware = (
     return res.status(401).send('Invalid token.');
   }
 
-  req.user = decoded;
+  req.user = decoded as JWTPayload;
   next();
 };

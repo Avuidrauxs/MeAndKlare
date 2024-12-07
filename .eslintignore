@@ -1,0 +1,6 @@
+# Ignore the dist directory
+dist
+coverage
+test_utils
+jest.config.ts
+src/**/*.test.ts

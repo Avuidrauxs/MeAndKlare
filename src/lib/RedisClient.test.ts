@@ -1,26 +1,30 @@
-import { createClient } from 'redis';
+import { Redis } from 'ioredis';
 import RedisClient from './RedisClient';
 
-jest.mock('redis', () => {
-  const mClient = {
-    connect: jest.fn(),
-    on: jest.fn(),
-  };
-  return {
-    createClient: jest.fn(() => mClient),
-  };
-});
-
 describe('RedisClient', () => {
-  it('should create a new Redis client instance', () => {
-    const client = RedisClient.getInstance();
-    expect(createClient).toHaveBeenCalledTimes(1);
-    expect(client.connect).toHaveBeenCalled();
+  let redisClient: Redis;
+
+  beforeAll(() => {
+    redisClient = RedisClient.getInstance();
   });
 
-  it('should return the same instance on subsequent calls', () => {
-    const client1 = RedisClient.getInstance();
-    const client2 = RedisClient.getInstance();
-    expect(client1).toBe(client2);
+  afterAll(() => {
+    redisClient.disconnect();
+  });
+
+  it('should return the existing Redis instance if already created', () => {
+    const firstInstance = RedisClient.getInstance();
+    const secondInstance = RedisClient.getInstance();
+    expect(firstInstance).toBe(secondInstance);
+  });
+
+  it('should set and get a value from Redis', async () => {
+    const key = 'test-key';
+    const value = 'test-value';
+
+    await redisClient.set(key, value);
+    const result = await redisClient.get(key);
+
+    expect(result).toBe(value);
   });
 });

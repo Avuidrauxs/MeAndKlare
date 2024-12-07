@@ -1,17 +1,22 @@
-import { createClient, RedisClientType } from 'redis';
+import { Redis } from 'ioredis';
+import logger from './logger';
+import { config } from '../config';
 
 class RedisClient {
-  private static instance: RedisClientType;
+  private static instance: Redis;
 
-  static getInstance(): RedisClientType {
+  static getInstance(): Redis {
+    const { host, port } = config.redis;
+
     if (!RedisClient.instance) {
-      RedisClient.instance = createClient({
-        url: 'redis://redis:6379',
+      RedisClient.instance = new Redis({
+        host,
+        port: Number(port),
       });
+
       RedisClient.instance.on('error', (err) =>
-        console.error('Redis Client Error', err),
+        logger.error('Redis Client Error', err),
       );
-      RedisClient.instance.connect();
     }
     return RedisClient.instance;
   }

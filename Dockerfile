@@ -1,8 +1,9 @@
-FROM node:19
+FROM node:19-alpine AS builder
 
     WORKDIR /app
 
     COPY package*.json ./
+    COPY tsconfig.json ./
 
     RUN npm install
 

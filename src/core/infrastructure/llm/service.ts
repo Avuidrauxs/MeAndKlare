@@ -29,7 +29,7 @@ import {
   NORMAL_CONVERSATION_SYSTEM_PROMPT,
 } from '../../constants';
 import { config } from '../../../config';
-import { LlmServiceError } from '@/core/errors';
+import { LlmServiceError } from '../../../core/errors';
 
 class LLMService {
   private static redisClient = RedisClient.getInstance();

@@ -1,5 +1,6 @@
 # Ignore the dist directory
 dist
+node_modules
 coverage
 test_utils
 jest.config.ts

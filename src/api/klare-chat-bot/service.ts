@@ -1,3 +1,4 @@
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import LLMService from '../../core/infrastructure/llm/service';
 import {
   FlowType,
@@ -9,6 +10,7 @@ import {
 import { ContextService } from '../context/service';
 import KlareChatBotController from './controller';
 import { config } from '../../config';
+import NoLllmService from '../../core/infrastructure/llm/offlineService';
 
 class KlareChatBotService {
   static contextService: ContextService = new ContextService();
@@ -23,10 +25,11 @@ class KlareChatBotService {
     let response: LlmChainResponse;
     if (config.ai.noLllm) {
       // Code goes here for NoLllmService
+      const answer = NoLllmService.getResponse(input);
       response = {
-        answer: 'I am sorry, I am not available at the moment',
+        answer: answer.response,
         context: [],
-        chat_history: [],
+        chat_history: [new HumanMessage(input), new AIMessage(answer.response)],
       };
     } else {
       const llmChain = await this.getLLMChain(userContext?.flow);
@@ -99,17 +102,26 @@ class KlareChatBotService {
     sessionId: string,
   ): Promise<string> {
     const input = 'Hi';
+    let response: LlmChainResponse;
+    if (config.ai.noLllm) {
+      const answer = NoLllmService.getResponse(input);
+      response = {
+        answer: answer.response,
+        context: [],
+        chat_history: [new HumanMessage(input), new AIMessage(answer.response)],
+      };
+    } else {
+      // Hi user and then  For Check-In Flow, use a predefined script like "How are you doing today?" without needing classification.
 
-    // Hi user and then  For Check-In Flow, use a predefined script like "How are you doing today?" without needing classification.
+      const normalChatChain = await LLMService.klareConversationAgent();
 
-    const normalChatChain = await LLMService.klareConversationAgent();
+      // get the user context to get the sessionId
 
-    // get the user context to get the sessionId
-
-    const response = await normalChatChain.invoke(
-      { input, flow: FlowType.CHECK_IN },
-      { configurable: { sessionId } },
-    );
+      response = await normalChatChain.invoke(
+        { input, flow: FlowType.CHECK_IN },
+        { configurable: { sessionId } },
+      );
+    }
 
     // Store context and return the response
     await KlareChatBotController.contextService.upsertContext(userId, {

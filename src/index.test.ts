@@ -5,7 +5,6 @@ import { generateToken } from './auth';
 import { authMiddleware } from './middleware/authMiddleware';
 import app from '.';
 
-
 describe('GET /metrics', () => {
   it('should return 200 and metrics data', async () => {
     const response = await request(app).get('/metrics');

@@ -1,27 +1,26 @@
-
 version: '3.8'
-services:  
-    app:
-        build: .
-        ports:
-          - "${PORT}:${PORT}"
-        environment:
-          - NODE_ENV=development
-          - REDIS_HOST=redis
-          - REDIS_PORT=6379
-          - JWT_SECRET=${JWT_SECRET}
-          - OPENAI_API_KEY=${OPENAI_API_KEY}
-          - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-          - GROQ_API_KEY=${GROQ_API_KEY}
-          - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
-          - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
-        depends_on:
-          - redis
-        command: npm run dev
-    redis:
-        image: "redis:alpine"
-        container_name: redis
-        volumes:
-          - redis_data:/data
+services:
+  app:
+    build: .
+    ports:
+      - '${PORT}:${PORT}'
+    environment:
+      - NODE_ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
+    depends_on:
+      - redis
+    command: npm run dev
+  redis:
+    image: 'redis:alpine'
+    container_name: redis
+    volumes:
+      - redis_data:/data
 volumes:
   redis_data:

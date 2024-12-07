@@ -29,6 +29,7 @@ import {
   NORMAL_CONVERSATION_SYSTEM_PROMPT,
 } from '../../constants';
 import { config } from '../../../config';
+import { LlmServiceError } from '@/core/errors';
 
 class LLMService {
   private static redisClient = RedisClient.getInstance();
@@ -66,7 +67,7 @@ class LLMService {
     if (groqApiKey) {
       return GroqModel;
     }
-    throw new Error('No OpenAI or Anthropic or Groq API key found');
+    throw new LlmServiceError('No OpenAI or Anthropic or Groq API key found');
   }
 
   private static generateSystemPrompt(systemPrompt: string) {
@@ -137,34 +138,42 @@ class LLMService {
   }
 
   public static async klareConversationAgent() {
-    const retriever = await this.createRetriever(
-      'https://www.clareandme.com/faq',
-    );
-    const llm = this.getLLM();
+    try {
+      const retriever = await this.createRetriever(
+        'https://www.clareandme.com/faq',
+      );
+      const llm = this.getLLM();
 
-    const historyAwareRetriever = await createHistoryAwareRetriever({
-      llm,
-      retriever,
-      rephrasePrompt: this.generateSystemPrompt(CONTEXTUALIZE_SYSTEM_PROMPT),
-    });
+      const historyAwareRetriever = await createHistoryAwareRetriever({
+        llm,
+        retriever,
+        rephrasePrompt: this.generateSystemPrompt(CONTEXTUALIZE_SYSTEM_PROMPT),
+      });
 
-    const normaleFlowMessageChain = await createStuffDocumentsChain({
-      llm,
-      prompt: this.generateSystemPrompt(NORMAL_CONVERSATION_SYSTEM_PROMPT),
-    });
+      const normaleFlowMessageChain = await createStuffDocumentsChain({
+        llm,
+        prompt: this.generateSystemPrompt(NORMAL_CONVERSATION_SYSTEM_PROMPT),
+      });
 
-    const ragChain = await createRetrievalChain({
-      retriever: historyAwareRetriever,
-      combineDocsChain: normaleFlowMessageChain,
-    });
+      const ragChain = await createRetrievalChain({
+        retriever: historyAwareRetriever,
+        combineDocsChain: normaleFlowMessageChain,
+      });
 
-    return new RunnableWithMessageHistory({
-      runnable: ragChain,
-      getMessageHistory: this.getSessionHistory.bind(this),
-      inputMessagesKey: 'input',
-      historyMessagesKey: 'chat_history',
-      outputMessagesKey: 'answer',
-    });
+      return new RunnableWithMessageHistory({
+        runnable: ragChain,
+        getMessageHistory: this.getSessionHistory.bind(this),
+        inputMessagesKey: 'input',
+        historyMessagesKey: 'chat_history',
+        outputMessagesKey: 'answer',
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new LlmServiceError(error.message);
+      } else {
+        throw new LlmServiceError('Something went wrong with LangChain');
+      }
+    }
   }
 }
 

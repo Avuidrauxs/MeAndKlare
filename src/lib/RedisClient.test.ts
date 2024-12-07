@@ -2,7 +2,6 @@ import { Redis } from 'ioredis';
 import RedisClient from './RedisClient';
 
 describe('RedisClient', () => {
-
   let redisClient: Redis;
 
   beforeAll(() => {
@@ -12,7 +11,6 @@ describe('RedisClient', () => {
   afterAll(() => {
     redisClient.disconnect();
   });
-
 
   it('should return the existing Redis instance if already created', () => {
     const firstInstance = RedisClient.getInstance();
@@ -29,5 +27,4 @@ describe('RedisClient', () => {
 
     expect(result).toBe(value);
   });
-
 });

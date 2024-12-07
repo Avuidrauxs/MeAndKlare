@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
+import { Redis } from 'ioredis';
 import app from '../../index';
 import RedisClient from '../../lib/RedisClient';
-import { Redis } from 'ioredis';
 
 describe('User Routes', () => {
   let redisClient: Redis;
@@ -46,7 +46,9 @@ describe('User Routes', () => {
       .send({ username, password });
 
     expect(response.status).toBe(400);
-    expect(response.text).toBe("{\"message\":\"Validation failed: username should not be empty\"}");
+    expect(response.text).toBe(
+      '{"message":"Validation failed: username should not be empty"}',
+    );
   });
 
   it('should login an existing user', async () => {
@@ -66,7 +68,7 @@ describe('User Routes', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('token');
 
-    const token = response.body.token;
+    const { token } = response.body;
     expect(token).toBeDefined();
   });
 
@@ -91,6 +93,8 @@ describe('User Routes', () => {
       .send({ username, password });
 
     expect(response.status).toBe(400);
-    expect(response.text).toBe("{\"message\":\"Validation failed: username should not be empty\"}");
+    expect(response.text).toBe(
+      '{"message":"Validation failed: username should not be empty"}',
+    );
   });
 });

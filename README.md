@@ -7,7 +7,7 @@ A robust TypeScript-based service for classifying messages, managing conversatio
 - Message classification (Normal, FAQ, Suicide Risk)
 - Conversation flow management
 - Context maintenance with Redis
-- OpenAI/Anthropic integration via LangChain
+- OpenAI/Anthropic/Groq integration via LangChain
 - TypeScript implementation
 - Docker support
 - Comprehensive testing suite
@@ -17,24 +17,27 @@ A robust TypeScript-based service for classifying messages, managing conversatio
 - Node.js 18+
 - Redis
 - Docker and Docker Compose (optional)
-- OpenAI API key
+- OpenAI/Anthropic/Groq API key
 
 ## 🛠️ Installation
 
 ### Local Development Setup
 
 1. **Clone the repository**
+
 ```bash
 git clone <repository-url>
 cd MeAndKlare
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Environment Configuration**
+
 ```bash
 # Copy example environment file
 cp .env.example .env
@@ -43,7 +46,8 @@ cp .env.example .env
 nano .env
 ```
 
-Required environment variables:
+Required environment variables for LLM usage:
+
 ```env
 OPENAI_API_KEY= # You can get API key here: https://platform.openai.com/api-keys
 # OR
@@ -56,14 +60,21 @@ PORT=3000
 LANGCHAIN_TRACING_V2="true"
 LANGCHAIN_API_KEY= # You can get API key here: https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key
 OPENAI_MODEL="gpt-4o-mini"
-# OR 
+# OR
 ANTHROPIC_MODEL=claude-3-5-sonnet-20240620
 LLM_TEMP= 0
 JWT_SECRET=secret
 MAX_TOKENS=2000
 ```
 
+If you don't have the API keys to use any of these LLms then you can set this env
+
+```env
+NO_LLM="true"
+```
+
 4. **Start Redis** (if not using Docker)
+
 ```bash
 # Install Redis (Ubuntu)
 sudo apt-get install redis-server
@@ -73,6 +84,7 @@ sudo service redis-server start
 ```
 
 5. **Build and Run**
+
 ```bash
 # Development mode
 npm run dev
@@ -85,6 +97,7 @@ npm start
 ### 🐳 Docker Setup
 
 1. **Build and run with Docker Compose**
+
 ```bash
 # Start all services
 docker-compose up --build
@@ -94,6 +107,7 @@ docker-compose up -d --build
 ```
 
 2. **Stop services**
+
 ```bash
 docker-compose down
 ```
@@ -114,21 +128,21 @@ npm test -- [relative path to file]
 ## 📚 API Documentation
 
 ### Authentication
+
 All conversational AI endpoints require JWT authentication via Bearer token in the Authorization header.
-
-
 
 ### Endpoints
 
 #### Register User
 
-**URL:** `/register`
+**URL:** `/api/v1/user/register`
 
 **Method:** `POST`
 
 **Description:** Registers a new user.
 
 **Request Body:**
+
 ```json
 {
   "username": "string",
@@ -137,6 +151,7 @@ All conversational AI endpoints require JWT authentication via Bearer token in t
 ```
 
 **Response:**
+
 - `200 OK` on successful registration
   ```json
   {
@@ -152,13 +167,14 @@ All conversational AI endpoints require JWT authentication via Bearer token in t
 
 #### Login User
 
-**URL:** `/login`
+**URL:** `/api/v1/user/login`
 
 **Method:** `POST`
 
 **Description:** Logs in an existing user and returns a JWT token.
 
 **Request Body:**
+
 ```json
 {
   "username": "string",
@@ -167,6 +183,7 @@ All conversational AI endpoints require JWT authentication via Bearer token in t
 ```
 
 **Response:**
+
 - `200 OK` on successful login
   ```json
   {
@@ -181,8 +198,9 @@ All conversational AI endpoints require JWT authentication via Bearer token in t
   ```
 
 #### Send Message
+
 ```http
-POST /api/sendMessage
+POST /api/v1/message/sendMessage
 Content-Type: application/json
 Authorization: Bearer <token>
 
@@ -192,22 +210,25 @@ Authorization: Bearer <token>
 ```
 
 #### Initiate Check-In
+
 ```http
-POST /api/initiateCheckIn
+POST /api/v1/message/initiateCheckin
 Content-Type: application/json
 Authorization: Bearer <token>
 
 ```
 
 #### Retrieve Context
+
 ```http
-GET /api/retrieveContext
+GET /api/v1/context/retrieveContext
 Authorization: Bearer <token>
 ```
 
 #### Update Context
+
 ```http
-PUT /api/updateContext
+PUT /api/v1/context/updateContext
 Content-Type: application/json
 Authorization: Bearer <token>
 
@@ -219,10 +240,16 @@ Authorization: Bearer <token>
 }
 ```
 
+### Postman Collection
+
+Can be downloaded from [here](https://drive.google.com/file/d/17zrP4ZcN9H90klOj80D2dtRLigQ8trnp/view?usp=sharing)
+
 ## 🔧 Configuration
 
 ### TypeScript Configuration
+
 Key configurations in `tsconfig.json`:
+
 ```json
 {
   "compilerOptions": {
@@ -237,7 +264,9 @@ Key configurations in `tsconfig.json`:
 ```
 
 ### Jest Configuration
+
 Key configurations in `jest.config.ts`:
+
 ```typescript
 {
   preset: 'ts-jest',
@@ -260,12 +289,14 @@ Key configurations in `jest.config.ts`:
 ## 🔍 Monitoring
 
 The service includes:
+
 - Error logging
 - Request logging
 - Performance metrics
 - Health checks
 
 Access monitoring endpoints:
+
 ```http
 GET /health
 GET /metrics
@@ -280,22 +311,16 @@ GET /metrics
 - Check if Inputs exceed max tokens
 - Error handling
 
-
-1. Open a Pull Request
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
 ## ⚠️ Known Issues
 
-- List any known issues or limitations
-- Workarounds if available
-- Planned fixes
-
+- Didn't populate a lot of scenarios for offline LLM usage
+- Chat_history has no limits for now
+- Test coverage not 100%
 
 ---
 
-Made with ❤️ by [Audax/Klare&Me]
-
+Made with ❤️ by [Audax/Me&Klare]

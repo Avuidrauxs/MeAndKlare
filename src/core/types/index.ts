@@ -1,6 +1,7 @@
 import { Document } from '@langchain/core/documents';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { RunnableWithMessageHistory } from '@langchain/core/runnables';
+import { string } from 'zod';
 
 export enum Intent {
   NORMAL = 'NORMAL',
@@ -74,4 +75,9 @@ export type LlmChainResponse = {
 } & {
   chat_history?: MessageArray;
   [key: string]: unknown;
+};
+
+export type LlmResponse = {
+  response: string;
+  intent: Intent;
 };

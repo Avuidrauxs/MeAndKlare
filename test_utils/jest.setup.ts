@@ -1,4 +1,4 @@
-import { RedisContainer } from '@testcontainers/redis'
+import { RedisContainer } from '@testcontainers/redis';
 import { StartedTestContainer } from 'testcontainers';
 
 declare global {

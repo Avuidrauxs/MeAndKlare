@@ -19,12 +19,12 @@ function getChatModel() {
     model = new AnthropicModel(anthropicModelName);
     return model.getGPTInstance();
   }
-  if (openAiApiKey) {
-    model = new OpenAiModel(openAiModelName);
-    return model.getGPTInstance();
-  }
   if (groqApiKey) {
     model = new GroqModel(groqModelName);
+    return model.getGPTInstance();
+  }
+  if (openAiApiKey) {
+    model = new OpenAiModel(openAiModelName);
     return model.getGPTInstance();
   }
   throw new LlmServiceError('No OpenAI, Anthropic, or Groq API key found');

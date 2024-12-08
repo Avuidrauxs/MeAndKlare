@@ -97,4 +97,45 @@ describe('User Routes', () => {
       '{"message":"Validation failed: username should not be empty"}',
     );
   });
+
+  it('should not login a new user with wrong password', async () => {
+    const username = faker.internet.displayName();
+    const password = faker.internet.password();
+
+    // Register the user first
+    await request(app)
+      .post('/api/v1/user/register')
+      .send({ username, password });
+
+    // Login the user
+    const response = await request(app)
+      .post('/api/v1/user/login')
+      .send({ username, password: 'password' });
+
+      expect(response.status).toBe(401);
+      expect(response.text).toBe('{\"message\":\"Invalid credentials\"}');
+  });
+
+  it('should not login a new user with no exiting user details', async () => {
+    const username = faker.internet.displayName();
+    const password = faker.internet.password();
+
+    // Register the user first
+    await request(app)
+      .post('/api/v1/user/register')
+      .send({ username, password });
+  
+      const userId = await redisClient.get(`username:${username}`);
+  
+      const userKey = `user:${userId}`;
+      await redisClient.del(userKey);
+
+    // Login the user
+    const response = await request(app)
+      .post('/api/v1/user/login')
+      .send({ username, password });
+
+      expect(response.status).toBe(401);
+      expect(response.text).toBe('{\"message\":\"User not registered\"}');
+  });
 });

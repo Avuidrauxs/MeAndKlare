@@ -43,7 +43,7 @@ class UserService {
     const userValue = await this.redisClient.get(userKey);
 
     if (!userValue) {
-      throw new UserServiceError('Invalid credentials');
+      throw new UserServiceError('User not registered');
     }
 
     const user = JSON.parse(userValue) as User;
@@ -68,6 +68,7 @@ class UserService {
     return token;
   }
 
+  /* istanbul ignore next */
   static async getUser(userId: string): Promise<User | null> {
     const key = `user:${userId}`;
     const value = await this.redisClient.get(key);

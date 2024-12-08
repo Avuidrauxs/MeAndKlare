@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
 import { v4 as uuidv4 } from 'uuid';
-import RedisClient from '../../lib/RedisClient';
+import RedisClient from '../../core/lib/redis/RedisClient';
 import { Context, FlowType, Message } from '../../core/types';
-import logger from '../../lib/logger';
+import logger from '../../core/lib/logger';
 import { IContextService } from '../../core/interfaces';
 import { ContextServiceError } from '../../core/errors';
 

@@ -2,7 +2,7 @@ import request from 'supertest';
 import { faker } from '@faker-js/faker';
 import { Redis } from 'ioredis';
 import app from '../../index';
-import RedisClient from '../../lib/RedisClient';
+import RedisClient from '../../core/lib/redis/RedisClient';
 
 describe('User Routes', () => {
   let redisClient: Redis;
@@ -81,7 +81,7 @@ describe('User Routes', () => {
       .send({ username, password });
 
     expect(response.status).toBe(401);
-    expect(response.text).toBe('Invalid credentials');
+    expect(response.text).toBe('{\"message\":\"Invalid credentials\"}');
   });
 
   it('should not login a new user with no username', async () => {

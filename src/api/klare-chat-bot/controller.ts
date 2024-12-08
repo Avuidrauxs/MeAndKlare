@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import logger from '../../lib/logger';
+import logger from '../../core/lib/logger';
 import { ContextService } from '../context/service';
 import { FlowType, Intent, JWTPayload, MessageArray } from '../../core/types';
 import LLMService from '../../core/infrastructure/llm/service';
-import { GlobalValidator } from '../../utils/validators';
+import { GlobalValidator } from '../../core/utils/validators';
 import { InputDto } from './input.dto';
-import { config } from '../../config';
+import { config } from '../../core/config';
 import KlareChatBotService from './service';
 
 export default class KlareChatBotController {
@@ -19,7 +19,6 @@ export default class KlareChatBotController {
     try {
       const { input } = await GlobalValidator.validateInput(InputDto, req.body);
       const sanitizedInput = GlobalValidator.sanitizeInput(input);
-      // To make sure we stick to a fixed token
       const truncatedInput = GlobalValidator.truncateInput(
         sanitizedInput,
         config.ai.maxTokens,

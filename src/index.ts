@@ -8,9 +8,9 @@ import dotenv from 'dotenv';
 import klarebotRoutes from './api/klare-chat-bot/routes';
 import userRoutes from './api/user/routes';
 import contextRoutes from './api/context/routes';
-import errorHandler from './middleware/errorHandler';
-import { config } from './config';
-import logger from './lib/logger';
+import errorHandler from './api/middleware/errorHandler';
+import { config } from './core/config';
+import logger from './core/lib/logger';
 
 dotenv.config();
 
@@ -63,9 +63,6 @@ app.use('/api/v1/context', contextRoutes);
 
 // Catch-all error handling middleware
 app.use(errorHandler);
-
-// Health check
-app.get('/health', (_, res) => res.status(200).json({ status: 'ok' }));
 
 if (env !== 'test') {
   app.listen(port, () => {

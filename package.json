@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "dev:alt": "ts-node-dev src/index.ts",
     "dev": "nodemon src/index.ts",
     "test": "jest --forceExit --maxWorkers=1",
     "test:coverage": "jest --coverage",

@@ -13,9 +13,9 @@ interface Config {
   };
   ai: {
     noLllm: boolean;
-    openAiApiKey: string;
-    anthropicApiKey: string;
-    groqApiKey: string;
+    openAiApiKey: string | null;
+    anthropicApiKey: string | null;
+    groqApiKey: string | null;
     openAiModelName: string;
     anthropicModelName: string;
     groqModelName: string;
@@ -38,15 +38,18 @@ export const config: Config = {
   },
   redis: {
     url: process.env.REDIS_URL || 'redis://localhost:6379',
-    host: process.env.REDIS_HOST || 'redis',
+    host: process.env.REDIS_HOST || 'localhost',
     port: process.env.REDIS_PORT || '6379',
     ttl: 60 * 60 * 24, // 24 hours
   },
   ai: {
-    noLllm: process.env.NO_LLM === 'true',
-    openAiApiKey: process.env.OPENAI_API_KEY || '',
-    anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
-    groqApiKey: process.env.GROQ_API_KEY || '',
+    noLllm:
+      !process.env.OPENAI_API_KEY &&
+      !process.env.GROQ_API_KEY &&
+      !process.env.ANTHROPIC_API_KEY,
+    openAiApiKey: process.env.OPENAI_API_KEY || null,
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY || null,
+    groqApiKey: process.env.GROQ_API_KEY || null,
     groqModelName: process.env.GROQ_MODEL || 'mixtral-8x7b-32768',
     openAiModelName: process.env.OPENAI_MODEL || 'gpt-4o-mini',
     temperature: Number(process.env.LLM_TEMP) || 0.7,

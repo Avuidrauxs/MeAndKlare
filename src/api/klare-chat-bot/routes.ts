@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import KlareChatBotController from './controller';
-import { authMiddleware } from '../../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 

@@ -3,10 +3,10 @@ import { Redis } from 'ioredis';
 import { faker } from '@faker-js/faker';
 import { ContextService } from '../context/service';
 import LLMService from '../../core/infrastructure/llm/service';
-import { JWTPayload } from '../../core/types';
 import KlareChatBotController from './controller';
 import app from '../..';
-import RedisClient from '../../lib/RedisClient';
+import RedisClient from '../../core/lib/redis/RedisClient';
+import { config } from '../../core/config';
 
 jest.mock('../../core/infrastructure/llm/service');
 
@@ -48,6 +48,7 @@ describe('KlareChatBotController Routes', () => {
   });
 
   it('should handle sendMessage correctly', async () => {
+    config.ai.noLllm = false;
     const mockResponse = {
       answer: 'Test response',
       context: [],
@@ -68,6 +69,7 @@ describe('KlareChatBotController Routes', () => {
   });
 
   it('should handle initiateCheckIn correctly', async () => {
+    config.ai.noLllm = false;
     const mockResponse = {
       answer: 'Check-in response',
       context: [],
@@ -85,6 +87,29 @@ describe('KlareChatBotController Routes', () => {
 
     expect(response.status).toBe(200);
     expect(response.text).toBe('Check-in response');
-    // expect(contextService.upsertContext).toHaveBeenCalledWith('test-user-id', expect.any(Object));
+  });
+
+  it('should handle sendMessage correctly when theres no LLM', async () => {
+    config.ai.noLllm = true;
+
+    const response = await request(app)
+      .post('/api/v1/message/sendMessage')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ input: 'Hello' });
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("I'm sorry, I don't have an answer for that. Please check our FAQ page for more information.");
+  });
+
+  it('should handle initiateCheckIn correctly when theres no LLM', async () => {
+    config.ai.noLllm = true;
+
+    const response = await request(app)
+      .post('/api/v1/message/initiateCheckIn')
+      .set('Authorization', `Bearer ${token}`)
+      .send();
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('Hi! How are you doing today?');
   });
 });

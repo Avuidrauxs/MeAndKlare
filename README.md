@@ -67,11 +67,9 @@ JWT_SECRET=secret
 MAX_TOKENS=2000
 ```
 
-If you don't have the API keys to use any of these LLms then you can set this env
+If you don't have the API keys to use any of these LLms then the config `NO_LLM` will be set to true and then 
+the fallback mechanism to handle offline prompts will be used
 
-```env
-NO_LLM="true"
-```
 
 4. **Start Redis** (if not using Docker)
 

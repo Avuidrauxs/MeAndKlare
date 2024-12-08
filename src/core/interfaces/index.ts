@@ -8,13 +8,6 @@ export interface IContextService {
   clearContext(userId: string): Promise<void>;
 }
 
-export interface IAIService {
-  classifyIntent(message: string): Promise<Intent>;
-  generateResponse(message: string, context: Context): Promise<string>;
-}
-
-export interface ICacheService {
-  get(key: string): Promise<string | null>;
-  set(key: string, value: string, ttl?: number): Promise<void>;
-  delete(key: string): Promise<void>;
+export interface IAiService {
+  getGPTInstance(input: string): unknown;
 }

@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
-import logger from './logger';
-import { config } from '../config';
+import logger from '../logger';
+import { config } from '../../config';
 
 class RedisClient {
   private static instance: Redis;

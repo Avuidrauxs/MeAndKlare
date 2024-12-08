@@ -12,10 +12,11 @@ const config: Config.InitialOptions = {
     global: {
       branches: 50,
       functions: 50,
-      lines: 80,
-      statements: 80,
+      lines: 90,
+      statements: 90,
     },
   },
+  coveragePathIgnorePatterns: ['./src/core/lib/langchain']
 };
 
 export default config;

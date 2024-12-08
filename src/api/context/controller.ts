@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import logger from '../../lib/logger';
 import { ContextService } from '../context/service';
 import { JWTPayload } from '../../core/types';
 import { ContextDto } from './context.dto';
-import { GlobalValidator } from '../../utils/validators';
+import { GlobalValidator } from '../../core/utils/validators';
 
 export default class ContextController {
   static contextService: ContextService = new ContextService();

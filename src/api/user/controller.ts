@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import UserService from './service';
 import { UserDto } from './user.dto';
-import { GlobalValidator } from '../../utils/validators';
-import { ValidationError } from '../../core/errors';
+import { GlobalValidator } from '../../core/utils/validators';
+import { UserServiceError, ValidationError } from '../../core/errors';
 
 class UserController {
   static async registerUser(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +25,10 @@ class UserController {
       const token = await UserService.loginUser(username, password);
       res.send({ token });
     } catch (error) {
-      if (error instanceof ValidationError) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof UserServiceError
+      ) {
         next(error);
       } else {
         res.status(401).send('Invalid credentials');

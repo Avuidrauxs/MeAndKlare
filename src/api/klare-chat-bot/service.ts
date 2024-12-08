@@ -9,7 +9,7 @@ import {
 } from '../../core/types';
 import { ContextService } from '../context/service';
 import KlareChatBotController from './controller';
-import { config } from '../../config';
+import { config } from '../../core/config';
 import NoLllmService from '../../core/infrastructure/llm/offlineService';
 
 class KlareChatBotService {
@@ -24,7 +24,6 @@ class KlareChatBotService {
       await KlareChatBotController.contextService.getContext(userId);
     let response: LlmChainResponse;
     if (config.ai.noLllm) {
-      // Code goes here for NoLllmService
       const answer = NoLllmService.getResponse(input);
       response = {
         answer: answer.response,
@@ -111,12 +110,7 @@ class KlareChatBotService {
         chat_history: [new HumanMessage(input), new AIMessage(answer.response)],
       };
     } else {
-      // Hi user and then  For Check-In Flow, use a predefined script like "How are you doing today?" without needing classification.
-
       const normalChatChain = await LLMService.klareConversationAgent();
-
-      // get the user context to get the sessionId
-
       response = await normalChatChain.invoke(
         { input, flow: FlowType.CHECK_IN },
         { configurable: { sessionId } },

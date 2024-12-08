@@ -17,19 +17,14 @@ import { RedisChatMessageHistory } from '@langchain/community/stores/message/ior
 import { RunnableWithMessageHistory } from '@langchain/core/runnables';
 import { BaseChatMessageHistory } from '@langchain/core/chat_history';
 import { VectorStoreRetriever } from '@langchain/core/vectorstores';
-import {
-  AnthropicModel,
-  GroqModel,
-  OpenAIModel,
-} from '../../../lib/LangChainClient';
-import RedisClient from '../../../lib/RedisClient';
+import RedisClient from '../../lib/redis/RedisClient';
 import {
   CLASSIFY_SYSTEM_PROMPT,
   CONTEXTUALIZE_SYSTEM_PROMPT,
   NORMAL_CONVERSATION_SYSTEM_PROMPT,
 } from '../../constants';
-import { config } from '../../../config';
 import { LlmServiceError } from '../../../core/errors';
+import { getChatModel } from '../../../core/lib/langchain';
 
 class LLMService {
   private static redisClient = RedisClient.getInstance();
@@ -57,17 +52,7 @@ class LLMService {
   }
 
   private static getLLM() {
-    const { openAiApiKey, anthropicApiKey, groqApiKey } = config.ai;
-    if (anthropicApiKey) {
-      return AnthropicModel;
-    }
-    if (openAiApiKey) {
-      return OpenAIModel;
-    }
-    if (groqApiKey) {
-      return GroqModel;
-    }
-    throw new LlmServiceError('No OpenAI or Anthropic or Groq API key found');
+    return getChatModel();
   }
 
   private static generateSystemPrompt(systemPrompt: string) {

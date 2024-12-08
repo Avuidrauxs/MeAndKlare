@@ -1,11 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { JWTPayload } from './core/types';
-import { config } from './config';
+import { config } from '../config';
 
 const SECRET_KEY = config.auth.jwtSecret;
 
 export const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
+  return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '8h' });
 };
 
 export const verifyToken = (token: string) => {

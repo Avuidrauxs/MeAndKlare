@@ -12,3 +12,4 @@ export class BaseError extends Error {
 export class ContextServiceError extends BaseError {}
 export class LlmServiceError extends BaseError {}
 export class ValidationError extends BaseError {}
+export class UserServiceError extends BaseError {}

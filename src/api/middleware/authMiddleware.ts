@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../auth';
-import { JWTPayload } from '../core/types';
+import { JWTPayload } from '../../core/types';
+import { verifyToken } from '../../core/utils/auth';
 
 declare global {
   namespace Express {

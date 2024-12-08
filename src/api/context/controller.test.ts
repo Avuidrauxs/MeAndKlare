@@ -2,7 +2,7 @@ import request from 'supertest';
 import { faker } from '@faker-js/faker';
 import { Redis } from 'ioredis';
 import app from '../../index';
-import RedisClient from '../../lib/RedisClient';
+import RedisClient from '../../core/lib/redis/RedisClient';
 import { ContextService } from './service';
 import { Context, FlowType } from '../../core/types';
 import { ContextServiceError } from '../../core/errors';

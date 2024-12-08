@@ -1,8 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'supertest';
-import express from 'express';
-import { generateToken } from './auth';
-import { authMiddleware } from './middleware/authMiddleware';
 import app from '.';
 
 describe('GET /metrics', () => {

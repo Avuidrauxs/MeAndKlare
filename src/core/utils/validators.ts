@@ -10,7 +10,7 @@ import {
   englishDataset,
   englishRecommendedTransformers,
 } from 'obscenity';
-import { ValidationError as ValidationsError } from '../core/errors';
+import { ValidationError as ValidationsError } from '../errors';
 
 const matcher = new RegExpMatcher({
   ...englishDataset.build(),

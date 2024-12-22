@@ -31,7 +31,7 @@ class KlareChatBotService {
         chat_history: [new HumanMessage(input), new AIMessage(answer.response)],
       };
     } else {
-      const llmChain = await this.getLLMChain(userContext?.flow);
+      const llmChain = await this.getLLMChain();
       response = await this.invokeLLMChain(
         llmChain,
         input,
@@ -93,7 +93,7 @@ class KlareChatBotService {
       response.chat_history || [],
       result.intent,
     );
-    return result.response;
+    return result.answer;
   }
 
   static async initiateCheckIn(

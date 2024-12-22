@@ -93,7 +93,7 @@ class KlareChatBotService {
       response.chat_history || [],
       result.intent,
     );
-    return result.answer;
+    return result.answer ?? result.response; // For weird behaviours with the different GPTS;
   }
 
   static async initiateCheckIn(

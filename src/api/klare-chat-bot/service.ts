@@ -87,7 +87,7 @@ class KlareChatBotService {
     await this.updateContext(
       userId,
       input,
-      result.response,
+      result.answer ?? result.response,
       sessionId,
       response.context,
       response.chat_history || [],

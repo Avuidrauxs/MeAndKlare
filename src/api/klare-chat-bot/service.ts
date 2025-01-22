@@ -31,7 +31,7 @@ class KlareChatBotService {
         chat_history: [new HumanMessage(input), new AIMessage(answer.response)],
       };
     } else {
-      const llmChain = await this.getLLMChain(userContext?.flow);
+      const llmChain = await this.getLLMChain();
       response = await this.invokeLLMChain(
         llmChain,
         input,
@@ -87,13 +87,13 @@ class KlareChatBotService {
     await this.updateContext(
       userId,
       input,
-      result.response,
+      result.answer ?? result.response,
       sessionId,
       response.context,
       response.chat_history || [],
       result.intent,
     );
-    return result.response;
+    return result.answer ?? result.response; // For weird behaviours with the different GPTS;
   }
 
   static async initiateCheckIn(
